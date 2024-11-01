@@ -1,0 +1,6 @@
+tensorflow <= 2.10
+mediapipe
+opencv-python
+numpy
+matplotlib
+protobuf == 3.20
