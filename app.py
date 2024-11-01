@@ -27,10 +27,10 @@ def extract_landmarks(landmarks):
     return np.concatenate([pose])
 
 
-label_map=["idel","hello","thanks"]
+label_map=["cheating","not cheating"]
 
 model = Sequential()
-model.add(LSTM(64, return_sequences=True, activation='relu', input_shape=(29,1662)))
+model.add(LSTM(64, return_sequences=True, activation='relu', input_shape=(30,1662)))
 model.add(LSTM(128, return_sequences=True, activation='relu'))
 model.add(LSTM(64, return_sequences=False, activation='relu'))
 model.add(Dense(64, activation='relu'))
