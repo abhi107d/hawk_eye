@@ -4,3 +4,4 @@ env
 Data
 Logs
 .ipynb_checkpoints/
+*.mp4
