@@ -3,10 +3,10 @@ import cv2
 
 
 # load yolov8 model
-model = YOLO('yolov8n.pt')
+model = YOLO('../yolov8n.pt')
 
 # load video
-video_path = './test.mp4'
+video_path = '../test.mp4'
 cap = cv2.VideoCapture(video_path)
 
 ret = True

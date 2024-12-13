@@ -3,14 +3,14 @@ import cv2
 from deep_sort_realtime.deepsort_tracker import DeepSort
 
 # Initialize YOLO model
-model = YOLO('yolov8n.pt')
+model = YOLO('../yolov8n.pt')
 
 # Initialize DeepSort tracker
 tracker = DeepSort(max_age=30, n_init=3, max_iou_distance=0.7)
 
 # Load video
-video_path = './test.mp4'
-cap = cv2.VideoCapture(0)
+video_path = '../test.mp4'
+cap = cv2.VideoCapture(video_path)
 
 while True:
     ret, frame = cap.read()
@@ -22,7 +22,7 @@ while True:
 
     # Prepare detections for DeepSort
     detections = []
-    class_names = []  # To store class names for each detection
+   
     for box in results[0].boxes:
         # Extract bounding box coordinates and confidence
         x1, y1, x2, y2 = map(float, box.xyxy[0])  # Ensure all values are Python floats
@@ -32,9 +32,8 @@ while True:
 
         # Append detection if confidence is above a threshold (e.g., 0.3)
         if conf > 0.8:
-            detections.append(([x1, y1, x2, y2], conf))
-            class_names.append(class_name)  # Save the class name
-
+            detections.append(([x1, y1, x2, y2], conf,class_name))
+           
     # Ensure detections are not empty before updating the tracker
     if len(detections) > 0:
         tracks = tracker.update_tracks(detections, frame=frame)
@@ -47,15 +46,11 @@ while True:
             x, y, w, h = track.to_ltwh()
             track_id = track.track_id
 
-            # Get the corresponding class name
-            if i < len(class_names):  # Ensure index is within range
-                class_name = class_names[i]
-            else:
-                class_name = "Unknown"
+         
 
             # Draw bounding box and ID
             cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2)
-            cv2.putText(frame, f"ID: {track_id} | {class_name}", (int(x), int(y) - 10),
+            cv2.putText(frame, f"ID: {track_id} | {track.get_det_class()}", (int(x), int(y) - 10),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
     # Display the frame

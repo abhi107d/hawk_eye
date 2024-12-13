@@ -4,13 +4,13 @@ import cv2
 from deep_sort_realtime.deepsort_tracker import DeepSort
 
 # Initialize YOLO model
-model = YOLO('yolov8n.pt')
+model = YOLO('../yolov8n.pt')
 
 # Initialize DeepSort tracker
 tracker = DeepSort(max_age=30, n_init=3, max_iou_distance=0.7)
 
 # Load video
-video_path = './test.mp4'
+video_path = '../test.mp4'
 cap = cv2.VideoCapture(0)
 
 while True:
