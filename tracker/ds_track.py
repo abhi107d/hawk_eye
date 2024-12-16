@@ -11,7 +11,7 @@ tracker = DeepSort(max_age=30, n_init=3, max_iou_distance=0.7)
 
 # Load video
 video_path = '../test.mp4'
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(video_path)
 
 while True:
     ret, frame = cap.read()
@@ -19,7 +19,7 @@ while True:
         break
 
     # Run object detection
-    results = model(frame)
+    results = model(frame,verbose=False)
     
 
     # Prepare detections for DeepSort

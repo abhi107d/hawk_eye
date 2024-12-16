@@ -1,6 +1,7 @@
 from ultralytics import YOLO
 import cv2
-
+import os
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 
 # load yolov8 model
 model = YOLO('../yolov8n.pt')
