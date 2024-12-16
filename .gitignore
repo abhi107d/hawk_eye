@@ -1,7 +1,6 @@
 asset
 reference
 env
-Data
-Logs
 .ipynb_checkpoints/
+__pycache__
 *.mp4
