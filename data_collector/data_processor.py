@@ -131,7 +131,7 @@ no_frames=30
 # action=int(input("cheating=1 or non_cheating=2 : "))
 # action=labels[action-1]
 # _path=os.path.join("..\Data",action)
-sorce='../videos_test/exercise.avi'
+sorce=0#'../videos_test/test.mp4'
 # for vid in range(len(labels)):
 #     try:
 #         os.makedirs(os.path.join(_path))

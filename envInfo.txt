@@ -373,4 +373,6 @@ conda create -p D:/condaenv/torch python=3.11
 conda activate D:\condaenv\torch
 conda install -c conda-forge cudatoolkit=11.8 cudnn=8.9.7
 conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
-pip install absl-py  git+https://github.com/THU-MIG/yolov10.git deep-sort-realtime  mediapipe  
+pip install absl-py  git+https://github.com/THU-MIG/yolov10.git deep-sort-realtime  mediapipe 
+pip install scikit-learn 
+pip install huggingface_hub

@@ -11,7 +11,7 @@ from track import HumanTracker
 
 #returns an array of this object after processing
 class TrackObject:
-    def __init__(self,id,w,h,x,y,objClass,poseLandmarks=None,predClass=None,extractedPoseLandmarks=None):
+    def __init__(self,id,w,h,x,y,objClass,poseLandmarks=None,predClass=False,extractedPoseLandmarks=None):
         self.id=id
         self.w=w
         self.h=h
@@ -72,6 +72,8 @@ class FramePreprocessor:
         trackObjects=self.processFrame(frame=frame)
         for tob in trackObjects:
             image=frame[tob.y:tob.y+tob.h,tob.x:tob.x+tob.w]
+            if image is None:
+                continue
             image=cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
             landmarks=self.hol.process(image)
             tob.poseLandmarks=landmarks 

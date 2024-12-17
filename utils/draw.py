@@ -39,9 +39,13 @@ class Draw:
     
         for tob in trackObjects:
             # Draw bounding box and ID
-            cv2.rectangle(frame, (int(tob.x), int(tob.y)), (int(tob.x + tob.w), int(tob.y + tob.h)), (0, 255, 0), 2)
+            color=(0,255,0)
+            if tob.predClass:
+                color=(0,0,255)
+            
+            cv2.rectangle(frame, (int(tob.x), int(tob.y)), (int(tob.x + tob.w), int(tob.y + tob.h)), color, 2)
             cv2.putText(frame, f"ID: {tob.id} | {tob.objClass}", (int(tob.x), int(tob.y) - 10),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
             
         return frame
         
