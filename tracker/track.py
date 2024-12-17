@@ -44,22 +44,6 @@ class HumanTracker:
         return False
     
 
-    def drawTrack(self,tracks,frame,cv2):
-            
-            if tracks:
-                for i, track in enumerate(tracks):
-                    if not track.is_confirmed():
-                        continue
-                    # Extract track information
-                    x, y, w, h = track.to_ltwh()
-                    track_id = track.track_id
-
-                
-
-                    # Draw bounding box and ID
-                    cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2)
-                    cv2.putText(frame, f"ID: {track_id} | {track.get_det_class()}", (int(x), int(y) - 10),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
             
 
             

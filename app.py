@@ -5,8 +5,9 @@ import time
 from tensorflow.keras.models import Sequential
 import mediapipe as mp
 from tensorflow.keras.layers import LSTM, Dense
-import os
-
+import os,sys
+sys.path.insert(1, './tracker/')
+from track import HumanTracker
 
 
 

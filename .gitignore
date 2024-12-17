@@ -3,4 +3,3 @@ reference
 env
 .ipynb_checkpoints/
 __pycache__
-*.mp4
