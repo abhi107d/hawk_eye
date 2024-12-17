@@ -128,19 +128,19 @@ class DataCollector:
 #adjust values here
 labels=["cheating","non_cheating"]
 no_frames=30
-action=int(input("cheating=1 or non_cheating=2 : "))
-action=labels[action-1]
-_path=os.path.join("..\Data",action)
-sorce=0#'../videos_test/exercise.avi'
-for vid in range(len(labels)):
-    try:
-        os.makedirs(os.path.join(_path))
-    except:
-        pass
+# action=int(input("cheating=1 or non_cheating=2 : "))
+# action=labels[action-1]
+# _path=os.path.join("..\Data",action)
+sorce='../videos_test/test.mp4'
+# for vid in range(len(labels)):
+#     try:
+#         os.makedirs(os.path.join(_path))
+#     except:
+#         pass
 
 
 
-dc=DataCollector(_path,sorce)
+dc=DataCollector('_path',sorce)
 
 dc.run()
 
