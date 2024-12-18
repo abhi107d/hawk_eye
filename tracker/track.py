@@ -2,11 +2,6 @@ from ultralytics import YOLO
 from deep_sort_realtime.deepsort_tracker import DeepSort
 
 
-# Initialize YOLO model
-
-# Initialize DeepSort tracker
-
-# Load video
 class HumanTracker:
 
     def __init__(self):
