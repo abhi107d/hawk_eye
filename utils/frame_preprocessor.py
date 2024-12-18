@@ -53,7 +53,7 @@ class FramePreprocessor:
             if tracks:
                 for i, track in enumerate(tracks):
                     det_class=track.get_det_class()
-                    if not track.is_confirmed() or det_class!="person":
+                    if not track.is_confirmed():
                         continue       
                     x, y, w, h = map(int, track.to_ltwh())
                     track_id = track.track_id

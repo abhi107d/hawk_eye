@@ -21,3 +21,4 @@ tmp*
 
 # Miscellaneous
 **/core
+weights/*.pt
