@@ -3,8 +3,6 @@ import cv2
 import os
 import sys
 import mediapipe as mp
-
-sys.path.insert(1, '../utils/')
 from track import HumanTracker
 
 

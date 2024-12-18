@@ -22,7 +22,7 @@ This project aims to develop a system for exam hall cheating detection It utiliz
 
 ## Instalation
 
-### step 1: Clone the Repository
+### Step 1: Clone the Repository
 Clone the project repository to your local machine:
 ```bash
 git clone https://github.com/abhi107d/hawk_eye.git
@@ -60,6 +60,19 @@ Install the remaining dependencies required for the project:
 ```bash
 pip -r requirements.txt
 ```
+
+### Step 7: Download Yolov10 weights
+```bash
+ mkdir weights
+ mkdir -p weights
+ wget -P weights -q https://github.com/jameslahm/yolov10/releases/download/v1.0/yolov10n.pt
+ wget -P weights -q https://github.com/jameslahm/yolov10/releases/download/v1.0/yolov10s.pt
+ wget -P weights -q https://github.com/jameslahm/yolov10/releases/download/v1.0/yolov10m.pt
+ wget -P weights -q https://github.com/jameslahm/yolov10/releases/download/v1.0/yolov10b.pt
+ wget -P weights -q https://github.com/jameslahm/yolov10/releases/download/v1.0/yolov10x.pt
+ wget -P weights -q https://github.com/jameslahm/yolov10/releases/download/v1.0/yolov10l.pt
+ ls -lh weights
+ ```
 
 
 ## Usage

@@ -18,8 +18,6 @@ class Draw:
                             self.mp_draw.DrawingSpec(color=(245,117,66), thickness=2, circle_radius=1))
                                 
                                 
- 
-
     def drawPoseOnCrop(self,trackObjects,frame):
         #returns an array of croped images with 
         #drawn landmarks
