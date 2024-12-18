@@ -1,5 +1,23 @@
-asset
-reference
-env
+# General cache and temporary files
+__pycache__/
+*.py[cod]
+*.tmp
+*.temp
+*.log
 .ipynb_checkpoints/
-__pycache__
+
+# Ignore specific patterns globally
+**/.ipynb_checkpoints/
+**/githubs/
+**/skeleton_data/
+**/test_*
+
+# VSCode settings
+.vscode/
+
+# Specific file exclusions
+videos_test/ch13_20241218122900.mp4
+tmp*
+
+# Miscellaneous
+**/core
