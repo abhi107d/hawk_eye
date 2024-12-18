@@ -4,7 +4,7 @@ import os
 import sys
 import mediapipe as mp
 from track import HumanTracker
-
+from image_processor import ImageProcessor
 
 
 #returns an array of this object after processing
@@ -29,7 +29,11 @@ class FramePreprocessor:
     def __init__(self):  
         self.mp_hol=mp.solutions.pose
         self.mp_draw=mp.solutions.drawing_utils
-        self.hol = self.mp_hol.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
+        self.hol = self.mp_hol.Pose(static_image_mode=False,
+        model_complexity=1,
+        enable_segmentation=True,
+        min_detection_confidence=0.5, min_tracking_confidence=0.5)
+        self.ip=ImageProcessor()
         self.tracker=HumanTracker()
        
                                    
@@ -63,16 +67,13 @@ class FramePreprocessor:
                 if trackObject:
                     return trackObject       
             return []
-
+    
  
 
     def extractTrackObjects(self,frame):     
         trackObjects=self.processFrame(frame=frame)
         for tob in trackObjects:
-            image=frame[tob.y:tob.y+tob.h,tob.x:tob.x+tob.w]
-            if image is None:
-                continue
-            image=cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
+            image=self.ip.preprocess_image(frame, tob, target_size=(256, 256))
             landmarks=self.hol.process(image)
             tob.poseLandmarks=landmarks 
             extractedPoseLandmarks=self.extractLandmarks(landmarks)

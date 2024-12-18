@@ -25,7 +25,7 @@ class HumanTracker:
         logger.info(f"Using {device} as processing device")
         self.tracker = DeepSort(max_age=20, n_init=3) #,max_iou_distance=0.7)
         self.class_id=0
-        self.conf=0.7
+        self.conf=0.5
 
 
 

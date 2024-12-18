@@ -1,5 +1,6 @@
 import cv2 
 import mediapipe as mp
+from image_processor import ImageProcessor
 
 
 class Draw:
@@ -7,6 +8,7 @@ class Draw:
     def __init__(self):          
         self.mp_draw=mp.solutions.drawing_utils
         self.mp_hol=mp.solutions.pose
+        self.ip=ImageProcessor()
            
         
 
@@ -17,13 +19,14 @@ class Draw:
                             self.mp_draw.DrawingSpec(color=(245,117,66), thickness=2, circle_radius=1),
                             self.mp_draw.DrawingSpec(color=(245,117,66), thickness=2, circle_radius=1))
                                 
-                                
+   
+                            
     def drawPoseOnCrop(self,trackObjects,frame):
         #returns an array of croped images with 
         #drawn landmarks
         imgs=[] 
         for tob in trackObjects:
-            image=frame[tob.y:tob.y+tob.h,tob.x:tob.x+tob.w].copy() 
+            image=self.ip.crop(frame,tob)
             self.drawLandmarks(image,tob.poseLandmarks)
             image=cv2.resize(image,(256,256))
             imgs.append(image)    
