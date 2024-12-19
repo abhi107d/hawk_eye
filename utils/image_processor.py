@@ -23,6 +23,8 @@ class ImageProcessor:
     
         cropped_image=self.crop(frame,tob)
         # Resize to target size
+        if cropped_image is None:
+            return None
         resized_image = cv2.resize(cropped_image, target_size)
         
         # Convert to RGB

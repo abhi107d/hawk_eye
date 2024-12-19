@@ -105,10 +105,10 @@ class DataCollector:
 
                 if trackObjects:
                     #self.saveCropAsImage(trackObjects,frame)
-                    #self.saveLandmarks(trackObjects)        
+                    # self.saveLandmarks(trackObjects)        
                     pass
                 
-                self.draw.drawTrack(trackObjects,frame) #for drawing               
+                self.draw.drawTrack(trackObjects,frame,True) #for drawing               
                 cv2.imshow("capture",frame)
                 if cv2.waitKey(10) & 0xFF == ord('q'):
 
@@ -126,10 +126,10 @@ class DataCollector:
 #adjust values here
 labels=["cheating","non_cheating"]
 no_frames=20
-# action=int(input("cheating=1 or non_cheating=2 : "))
-# action=labels[action-1]
-# _path=os.path.join("..\Data",action)
-sorce=0#'../videos_test/nc.mp4'
+action=int(input("cheating=1 or non_cheating=2 : "))
+action=labels[action-1]
+_path=os.path.join("..\Data",action)
+sorce='../videos_test/not_cheating.mp4'
 # for vid in range(len(labels)):
 #     try:
 #         os.makedirs(os.path.join(_path))
@@ -138,7 +138,7 @@ sorce=0#'../videos_test/nc.mp4'
 
 
 
-dc=DataCollector('_path',sorce)
+dc=DataCollector(_path,sorce,no_frames)
 
 dc.run()
 

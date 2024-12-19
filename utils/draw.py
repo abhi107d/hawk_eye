@@ -22,7 +22,7 @@ class Draw:
    
                             
     
-    def drawTrack(self,trackObjects,frame):
+    def drawTrack(self,trackObjects,frame,drawLandmarks=False):
     #draw squares around tracks 
     
         for tob in trackObjects:
@@ -30,9 +30,10 @@ class Draw:
             color=(0,255,0)
             if tob.predClass:
                 color=(0,0,255)
-
-            image=self.ip.crop(frame,tob)
-            self.drawLandmarks(image,tob.poseLandmarks)
+            if drawLandmarks:
+                image=self.ip.crop(frame,tob)
+                if image is not None:
+                    self.drawLandmarks(image,tob.poseLandmarks)
             
             cv2.rectangle(frame, (int(tob.x), int(tob.y)), (int(tob.x + tob.w), int(tob.y + tob.h)), color, 2)
             cv2.putText(frame, f"ID: {tob.id} | {tob.objClass}", (int(tob.x), int(tob.y) - 10),

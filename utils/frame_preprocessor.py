@@ -70,6 +70,8 @@ class FramePreprocessor:
         trackObjects=self.processFrame(frame=frame)
         for tob in trackObjects:
             image=self.ip.preprocess_image(frame, tob, target_size=(256, 256))
+            if image is None:
+                continue
             landmarks=self.hol.process(image)
             tob.poseLandmarks=landmarks 
             extractedPoseLandmarks=self.extractLandmarks(landmarks)

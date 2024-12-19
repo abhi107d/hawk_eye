@@ -4,6 +4,7 @@ __pycache__/
 *.tmp
 *.temp
 *.log
+*.npy
 .ipynb_checkpoints/
 
 # Ignore specific patterns globally
@@ -20,7 +21,11 @@ videos_test/ch13_20241218122900.mp4
 videos_test/cheating.mp4
 videos_test/not_cheating.mp4
 videos_test/nc.mp4
+videos_test/vinc.mp4
 tmp*
+Data/cheating/*
+Data/non_cheating/*
+
 
 # Miscellaneous
 **/core
