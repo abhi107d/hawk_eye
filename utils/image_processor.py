@@ -11,7 +11,7 @@ class ImageProcessor:
         y1 = max(0, tob.y - padding)
         x2 = min(frame.shape[1], tob.x + tob.w + padding)
         y2 = min(frame.shape[0], tob.y + tob.h + padding)
-        cropped_image = frame[y1:y2, x1:x2].copy()
+        cropped_image = frame[y1:y2, x1:x2]
         
         # Ensure the cropped image is not empty
         if cropped_image is None or cropped_image.size == 0:

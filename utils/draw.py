@@ -21,19 +21,6 @@ class Draw:
                                 
    
                             
-    def drawPoseOnCrop(self,trackObjects,frame):
-        #returns an array of croped images with 
-        #drawn landmarks
-        imgs=[] 
-        for tob in trackObjects:
-            image=self.ip.crop(frame,tob)
-            self.drawLandmarks(image,tob.poseLandmarks)
-            image=cv2.resize(image,(256,256))
-            imgs.append(image)    
-        # Concatenate all rows vertically
-        return cv2.hconcat(imgs)
-    
-
     
     def drawTrack(self,trackObjects,frame):
     #draw squares around tracks 
@@ -43,6 +30,9 @@ class Draw:
             color=(0,255,0)
             if tob.predClass:
                 color=(0,0,255)
+
+            image=self.ip.crop(frame,tob)
+            self.drawLandmarks(image,tob.poseLandmarks)
             
             cv2.rectangle(frame, (int(tob.x), int(tob.y)), (int(tob.x + tob.w), int(tob.y + tob.h)), color, 2)
             cv2.putText(frame, f"ID: {tob.id} | {tob.objClass}", (int(tob.x), int(tob.y) - 10),

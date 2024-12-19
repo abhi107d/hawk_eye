@@ -20,9 +20,7 @@ class TrackObject:
         self.extractedPoseLandmarks=extractedPoseLandmarks #model input
         self.predClass=predClass #used to assign class
 
-
-
-        
+       
 
 class FramePreprocessor:
 
@@ -59,11 +57,9 @@ class FramePreprocessor:
                         continue       
                     x, y, w, h = map(int, track.to_ltwh())
                     track_id = track.track_id
-                    #crop=frame[y:y+h, x:x+w]
-                    #if crop.size > 0 and crop.shape[0] > 0 and crop.shape[1] > 0 and crop is not None:
-                    if x>=0 and y>=0 and x+w<=frame.shape[1] and y+h<=frame.shape[0]:
-                        obj=TrackObject(id=track_id,w=w,h=h,x=x,y=y,objClass=det_class)
-                        trackObject.append((obj))
+                    #if x>=0 and y>=0 and x+w<=frame.shape[1] and y+h<=frame.shape[0]:
+                    obj=TrackObject(id=track_id,w=w,h=h,x=x,y=y,objClass=det_class)
+                    trackObject.append((obj))
                 if trackObject:
                     return trackObject       
             return []
