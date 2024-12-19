@@ -106,9 +106,7 @@ class DataCollector:
                 if trackObjects:
                     #self.saveCropAsImage(trackObjects,frame)
                     #self.saveLandmarks(trackObjects)        
-                    # uncoment if realtime for viewing 
-                    frame2=self.draw.drawPoseOnCrop(trackObjects,frame)
-                    cv2.imshow("capture2",frame2)
+                    pass
                 
                 self.draw.drawTrack(trackObjects,frame) #for drawing               
                 cv2.imshow("capture",frame)
@@ -127,11 +125,11 @@ class DataCollector:
                                 
 #adjust values here
 labels=["cheating","non_cheating"]
-no_frames=30
+no_frames=20
 # action=int(input("cheating=1 or non_cheating=2 : "))
 # action=labels[action-1]
 # _path=os.path.join("..\Data",action)
-sorce='../videos_test/exercise.avi'
+sorce=0#'../videos_test/nc.mp4'
 # for vid in range(len(labels)):
 #     try:
 #         os.makedirs(os.path.join(_path))
