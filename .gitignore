@@ -25,7 +25,7 @@ videos_test/vinc.mp4
 tmp*
 Data/cheating/*
 Data/non_cheating/*
-
+Data/data.*
 
 # Miscellaneous
 **/core
