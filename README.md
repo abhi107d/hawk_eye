@@ -86,10 +86,7 @@ python app_torch.py
 
 ## Notes
 - Ensure that you have a compatible GPU and drivers installed for CUDA Toolkit and cuDNN.
-- This repo currently have both tensorflow and torch versions of code. installation steps are for torch.
-- we are migrating to torch 
-- models\main1.h5 is tf model not accurate enough we are currently developing a new model with torch
-- env info of tensorflow version is in envInfo.txt
+- model is not accurate we need to collect more data
 
 ## :TODO
 - Train a torch lstm model on cctv data
