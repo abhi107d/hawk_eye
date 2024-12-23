@@ -84,6 +84,17 @@ conda activate ./torch
 python app.py
 ```
 
+## Training
+
+### Step 1:
+```bash
+python Preprocessor/data_processor.py
+```
+Enter the path or your source vido
+
+### Step 2:
+Run Trainer/Trainer.ipynb
+
 ## Notes
 - Ensure that you have a compatible GPU and drivers installed for CUDA Toolkit and cuDNN.
 - model is not accurate we need to collect more data

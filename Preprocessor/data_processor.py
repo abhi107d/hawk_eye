@@ -129,12 +129,12 @@ no_frames=20
 action=int(input("cheating=1 or non_cheating=2 : "))
 action=labels[action-1]
 _path=os.path.join("..\Data",action)
-sorce='../videos_test/not_cheating.mp4'
-# for vid in range(len(labels)):
-#     try:
-#         os.makedirs(os.path.join(_path))
-#     except:
-#         pass
+sorce=input("Enter your video path: ")
+for vid in range(len(labels)):
+    try:
+        os.makedirs(os.path.join(_path))
+    except:
+        pass
 
 
 

@@ -2,10 +2,7 @@ import torch
 import cv2
 import numpy as np
 import torch.nn as nn
-import torch.optim as optim
-from torch.utils.data import DataLoader, TensorDataset
 import mediapipe as mp
-from sklearn.preprocessing import LabelEncoder
 import  sys
 
 sys.path.insert(1, './utils/')
@@ -47,7 +44,7 @@ mp_pos = mp.solutions.pose
 mp_draw = mp.solutions.drawing_utils
 frameprocessor=FramePreprocessor()
 draw=Draw()
-cam = cv2.VideoCapture("./videos_test/vinc.mp4")
+cam = cv2.VideoCapture("./videos_test/not_cheating.mp4")
 action = {}
 text = ""
 trsh = 0.6
@@ -72,7 +69,7 @@ with mp_pos.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as h
                 
                 if len(action[tob.id])>=20:
                     
-                    input_tensor = torch.tensor(action[tob.id], dtype=torch.float32)
+                    input_tensor = torch.tensor(np.array(action[tob.id]), dtype=torch.float32)
                     input_tensor = input_tensor.unsqueeze(0)  # Add batch dimension: shape becomes (1, 20, 132)
                     input_tensor = input_tensor.to(device)
                     with torch.no_grad():
