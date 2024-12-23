@@ -81,7 +81,7 @@ After completing the installation, navigate to the project directory and activat
 ```bash
 cd hawk_eye
 conda activate ./torch
-python app_torch.py
+python app.py
 ```
 
 ## Notes
