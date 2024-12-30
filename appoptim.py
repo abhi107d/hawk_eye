@@ -23,15 +23,15 @@ class LSTMModel(nn.Module):
         self.relu = nn.ReLU()
         self.softmax = nn.Softmax(dim=1)
 
-    def forward(self, x):
-        x, _ = self.lstm1(x)
-        x, _ = self.lstm2(x)
-        x, _ = self.lstm3(x)
-        x = self.relu(self.fc1(x[:, -1, :]))  # Use the last time step's output
+    def forward(self, x,h1=None,h2=None,h3=None):
+        x, h1 = self.lstm1(x,h1)
+        x, h2 = self.lstm2(x,h2)
+        x, h3 = self.lstm3(x,h3)
+        x = self.relu(self.fc1(x))  # Use the last time step's output
         x = self.relu(self.fc2(x))
         #x = self.softmax(self.fc3(x))
         x = self.fc3(x)
-        return x
+        return x,h1,h2,h3
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -61,18 +61,21 @@ with mp_pos.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as h
         for tob in trackObjects:
             if tob.extractedPoseLandmarks is not None:
                 if tob.id not in action.keys():
-                    action[tob.id]=[]
+                    action[tob.id]={}   
                 
-                action[tob.id].append(tob.extractedPoseLandmarks)
-                action[tob.id]=action[tob.id][-30:]
-                
-                if len(action[tob.id])>=20:
+                action[tob.id]['x']=tob.extractedPoseLandmarks
+                action[tob.id]['h1']=None
+                action[tob.id]['h2']=None
+                action[tob.id]['h3']=None
                     
-                    input_tensor = torch.tensor(np.array(action[tob.id]), dtype=torch.float32)
+                
+                if tob.id in action.keys():
+                    
+                    input_tensor = torch.tensor(np.array(action[tob.id]['x']), dtype=torch.float32)
                     input_tensor = input_tensor.unsqueeze(0)  # Add batch dimension: shape becomes (1, 20, 132)
                     input_tensor = input_tensor.to(device)
                     with torch.no_grad():
-                        output = model(input_tensor)  # Output shape: (1, num_classes)
+                        output,h1,h2,h3 = model(input_tensor,action[tob.id]['h1'],action[tob.id]['h2'],action[tob.id]['h3'])  # Output shape: (1, num_classes)
                         prediction = torch.argmax(output, dim=1)
                         tob.predClass=label_map[prediction.item()] 
         # Drawing on the image

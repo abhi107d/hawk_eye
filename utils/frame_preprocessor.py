@@ -28,6 +28,7 @@ class FramePreprocessor:
         self.mp_hol=mp.solutions.pose
         self.mp_draw=mp.solutions.drawing_utils
         self.hol = self.mp_hol.Pose(static_image_mode=False,
+        #smooth_landmarks=True,
         model_complexity=1,
         enable_segmentation=True,
         min_detection_confidence=0.5, min_tracking_confidence=0.5)

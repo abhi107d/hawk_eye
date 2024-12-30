@@ -19,23 +19,18 @@ class ImageProcessor:
         return cropped_image
     
 
-    def preprocess_image(self,frame, tob, target_size=(640, 480)):
-    
-        cropped_image=self.crop(frame,tob)
-        # Resize to target size
+    def preprocess_image(self, frame, tob, target_size=(640, 480)):
+        cropped_image = self.crop(frame, tob)
         if cropped_image is None:
             return None
-        resized_image = cv2.resize(cropped_image, target_size)
         
-        # Convert to RGB
+        
+        resized_image = cv2.resize(cropped_image, target_size)
         rgb_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2RGB)
         
-        # Normalize pixel values
-        normalized_image = rgb_image / 255.0
+    
+        preprocessed_image = cv2.GaussianBlur(rgb_image, (5, 5), 0)
         
-        # Optionally, apply Gaussian blur
-        preprocessed_image = cv2.GaussianBlur(normalized_image, (5, 5), 0)
-        final_image = (preprocessed_image * 255).astype('uint8')
-        
-        return final_image
+        return preprocessed_image
+
     
