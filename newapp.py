@@ -44,7 +44,7 @@ objmodel.eval()
 extractor=Extractor()
 
 Mdict=defaultdict(lambda: [])
-cam = cv2.VideoCapture("./videos_test/test_1.mp4")
+cam = cv2.VideoCapture("./videos_test/cheating.mp4")
 trsh = 0.6
 res = np.array([0, 0])
 seqlen=20
@@ -77,10 +77,12 @@ while cam.isOpened():
                     print(input.shape,output.shape) 
                     prediction = torch.argmax(output, dim=-1)
                     for k in ididx.keys():
-                        if prediction.shape[0]>ididx[k]:
-                            idclass[k]=label_map[prediction[ididx[k]].item()]
+                      
+                        print(k,prediction.shape[0],ididx[k])
+                        idclass[k]=label_map[prediction[ididx[k]].item()]
         
         print(idclass)
+        ididx={}
 
         # Drawing on the image
         frame=results[0].plot()
