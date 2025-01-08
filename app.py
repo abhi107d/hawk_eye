@@ -64,7 +64,7 @@ with mp_pos.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as h
                     action[tob.id]=[]
                 
                 action[tob.id].append(tob.extractedPoseLandmarks)
-                action[tob.id]=action[tob.id][-30:]
+                action[tob.id]=action[tob.id][-20:]
                 
                 if len(action[tob.id])>=20:
                     
