@@ -44,7 +44,7 @@ objmodel.eval()
 extractor=Extractor()
 
 Mdict=defaultdict(lambda: [])
-cam = cv2.VideoCapture("./videos_test/not_cheating.mp4")
+cam = cv2.VideoCapture("./videos_test/test_1.mp4")
 trsh = 0.6
 res = np.array([0, 0])
 seqlen=20
@@ -67,17 +67,18 @@ while cam.isOpened():
                 if len(Mdict[idx[i].item()])==seqlen:
                     input.append(torch.stack(Mdict[idx[i].item()]))
                     ididx[idx[i].item()]=len(input)-1
+                    Mdict[idx[i].item()]=[]
             if len(input)>0:
                 input=torch.stack(input)
                 input.to(device)
                 input=input.reshape(input.shape[0],input.shape[1],-1)      
                 with torch.no_grad():
                     output = model(input) # Output shape: (1, num_classes)
-                    print(output) 
+                    print(input.shape,output.shape) 
                     prediction = torch.argmax(output, dim=-1)
                     for k in ididx.keys():
-                        print(prediction)
-                        idclass[k]=label_map[prediction[ididx[k]].item()]
+                        if prediction.shape[0]>ididx[k]:
+                            idclass[k]=label_map[prediction[ididx[k]].item()]
         
         print(idclass)
 
