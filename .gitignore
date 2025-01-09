@@ -6,7 +6,7 @@ __pycache__/
 *.log
 *.npy
 .ipynb_checkpoints/
-
+test.ipynb
 # Ignore specific patterns globally
 **/.ipynb_checkpoints/
 **/githubs/

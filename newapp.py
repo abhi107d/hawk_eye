@@ -6,7 +6,7 @@ from ultralytics import YOLO
 import sys
 sys.path.insert(1, './utils/')
 from extract import Extractor
-from collections import defaultdict
+from collections import defaultdict,deque
 
 label_map = [True, False]
 class LSTMModel(nn.Module):
@@ -34,8 +34,8 @@ class LSTMModel(nn.Module):
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 model = torch.load("models/model.pth")
-model.to(device)  # Move to the appropriate device if needed
-model.eval()  # Set the model to evaluation mode
+model.to(device) 
+model.eval()  
 
 
 objmodel = YOLO("../weights/yolo11x-pose.pt").to(device)
@@ -43,47 +43,41 @@ objmodel.eval()
 
 extractor=Extractor()
 
-Mdict=defaultdict(lambda: [])
+Mdict=defaultdict(lambda: deque(maxlen=seqlen))
 cam = cv2.VideoCapture("./videos_test/cheating.mp4")
 trsh = 0.6
 res = np.array([0, 0])
 seqlen=20
-ididx={}
-idclass={}
+
 while cam.isOpened():
         ret, frame = cam.read()
         if not ret:
             break
         input=[]
-        with torch.no_grad():
-            results=objmodel.track(frame, persist=True,tracker='bytetrack.yaml',verbose=False,device='cuda',conf=0.75)
-            rslt=extractor.tensor(results)
-            idx=results[0].boxes.id
-            if idx is None or rslt is  None:
-                continue
-            idx=idx.int()
-            for i in range(rslt.shape[0]):
-                Mdict[idx[i].item()].append(rslt[i])
-                if len(Mdict[idx[i].item()])==seqlen:
-                    input.append(torch.stack(Mdict[idx[i].item()]))
-                    ididx[idx[i].item()]=len(input)-1
-                    Mdict[idx[i].item()]=[]
-            if len(input)>0:
-                input=torch.stack(input)
-                input.to(device)
-                input=input.reshape(input.shape[0],input.shape[1],-1)      
-                with torch.no_grad():
-                    output = model(input) # Output shape: (1, num_classes)
-                    print(input.shape,output.shape) 
-                    prediction = torch.argmax(output, dim=-1)
-                    for k in ididx.keys():
-                      
-                        print(k,prediction.shape[0],ididx[k])
-                        idclass[k]=label_map[prediction[ididx[k]].item()]
-        
-        print(idclass)
         ididx={}
-
+        idclass={}
+        
+        results=objmodel.track(frame, persist=True,tracker='bytetrack.yaml',verbose=False,device='cuda',conf=0.75)
+        rslt=extractor.tensor(results)
+        idx=results[0].boxes.id
+        if idx is None or rslt is  None:
+            continue
+        idx=idx.int()
+        for i in range(rslt.shape[0]):
+            Mdict[idx[i].item()].append(rslt[i])
+            if len(Mdict[idx[i].item()])>=seqlen:
+                input.append(torch.stack(list(Mdict[idx[i].item()])))
+                ididx[idx[i].item()]=len(input)-1
+            
+        if input:
+            input=torch.stack(input).to(device)
+            input=input.reshape(input.shape[0],input.shape[1],-1)      
+            output = model(input) # Output shape: (N, num_classes)     
+            prediction = torch.argmax(output, dim=-1)#(N)
+            for k in ididx.keys():
+                idclass[k]=label_map[prediction[ididx[k]].item()]
+    
+        print(idclass)
         # Drawing on the image
         frame=results[0].plot()
         

@@ -16,6 +16,7 @@ This project aims to develop a system for exam hall cheating detection It utiliz
 - PyTorch
 - CUDA Toolkit (11.8)
 - cuDNN (8.9.7)
+- ultralytics
 - MediaPipe
 - OpenCV
 - Additional Python Libraries (scikit-learn, huggingface_hub, etc.)
