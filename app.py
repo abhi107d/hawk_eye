@@ -4,9 +4,9 @@ import torch.nn as nn
 from ultralytics import YOLO
 import argparse
 from collections import defaultdict,deque
-
 from src.utils import Extractor
 from src.utils import Draw
+import time
 
 def main():
     # Create the argument parser
@@ -14,7 +14,7 @@ def main():
     
     # Add required arguments
     parser.add_argument("--src",type=str,default=0, required=False, help="path")
-    parser.add_argument("--modelpath",default="models/model.pth",type=str,required=False,help="model path")
+    parser.add_argument("--modelpath",default="./models/model.pth",type=str,required=False,help="model path")
     parser.add_argument("--posepath",default="./weights/yolo11x-pose.pt",type=str,required=False,help="pose model path")
     
     # Parse the arguments
@@ -61,7 +61,7 @@ class Run():
         self.extractor=Extractor()
         self.draw=Draw()
 
-        self.Mdict=defaultdict(lambda: deque(maxlen=self.seqlen))
+        self.dict=defaultdict(lambda: deque(maxlen=self.seqlen))
         self.cam = cv2.VideoCapture(src)
         self.seqlen=20
 
@@ -69,39 +69,42 @@ class Run():
 
 
     def run(self):
-
         while self.cam.isOpened():
-                ret, frame = self.cam.read()
-                if not ret:
-                    break
-                input,ididx,idclass=[],{},{}
-                
-                results=self.objmodel.track(frame, persist=True,tracker='bytetrack.yaml',verbose=False,device='cuda',conf=0.75)
-                rslt=self.extractor.tensor(results)
-                idx=results[0].boxes.id
-                if idx is None or rslt is  None:
-                    continue
-                idx=idx.int()
-                for i in range(rslt.shape[0]):
-                    self.Mdict[idx[i].item()].append(rslt[i])
-                    if len(self.Mdict[idx[i].item()])>=self.seqlen:
-                        input.append(torch.stack(list(self.Mdict[idx[i].item()])))
-                        ididx[idx[i].item()]=len(input)-1
-                    
-                if input:
-                    input=torch.stack(input).to(self.device)
-                    input=input.reshape(input.shape[0],input.shape[1],-1)      
-                    output = self.model(input) # Output shape: (N, num_classes)     
-                    prediction = torch.argmax(output, dim=-1)#(N)
-                    for k in ididx.keys():
-                        idclass[k]=self.label_map[prediction[ididx[k]].item()]
-                
-                self.draw.drawBox(frame,results[0].boxes,idclass)
-                #frame=results[0].plot()
-                
+            
+            ret, frame = self.cam.read()
+            if not ret:
+                break
+            input,ididx,idclass=[],{},{}
+            
+            results=self.objmodel.track(frame, persist=True,tracker='bytetrack.yaml',verbose=False,device='cuda',conf=0.75)
+            rslt=self.extractor.tensor(results)
+            idx=results[0].boxes.id
+            if idx is None or rslt is  None:
                 cv2.imshow("Hawk eye", frame)
                 if cv2.waitKey(10) & 0xFF == ord('q'):
                     break
+                continue
+            idx=idx.int()
+            for i in range(rslt.shape[0]):
+                self.dict[idx[i].item()].append(rslt[i])
+                if len(self.dict[idx[i].item()])>=self.seqlen:
+                    input.append(torch.stack(list(self.dict[idx[i].item()])))
+                    ididx[idx[i].item()]=len(input)-1
+                
+            if input:
+                input=torch.stack(input).to(self.device)
+                input=input.reshape(input.shape[0],input.shape[1],-1)      
+                output = self.model(input) # Output shape: (N, num_classes)     
+                prediction = torch.argmax(output, dim=-1)#(N)
+                for k in ididx.keys():
+                    idclass[k]=self.label_map[prediction[ididx[k]].item()]
+                        
+            self.draw.drawBox(frame,results[0].boxes,idclass)
+            #frame=results[0].plot()
+            
+            cv2.imshow("Hawk eye", frame)
+            if cv2.waitKey(10) & 0xFF == ord('q'):
+                break
 
         self.cam.release()
         cv2.destroyAllWindows()

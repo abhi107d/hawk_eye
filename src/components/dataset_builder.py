@@ -35,36 +35,19 @@ def main():
 class DataCollector:
 
     def __init__(self,sorce,seqlen,modelpath):
-        with torch.no_grad():
-            self.model = YOLO(modelpath).to('cuda')
-            self.model.eval()
-
+        try:
+            with torch.no_grad():
+                self.model = YOLO(modelpath).to('cuda')
+                self.model.eval()
+        except:
+            print("Model not found")
+            exit(0)
         # Open the video file
         self.seqlen=seqlen
         self.cap = cv2.VideoCapture(sorce)
         self.extractor=Extractor()
         self.dict = defaultdict(lambda: [])
 
-
-    def show(self,frame,results):
-                    # Get the boxes and track IDs
-        boxes = results[0].boxes.xywh.cpu()
-        track_ids = results[0].boxes.id.int().cpu().tolist()
-        keypoints=results[0].keypoints.xy.int().cpu().tolist()
-        # Visualize the results on the frame
-        #frame= results[0].plot()
-                        
-        for (b,id,ky) in zip(boxes,track_ids,keypoints):
-            cv2.putText(
-                        frame,str(id),(int(b[0]), int(b[1])),fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1,color=(255, 0, 0),thickness=2                   
-                )        
-        for ky in keypoints:
-            for k in ky:
-                cv2.circle(frame,radius=2,center=(int(k[0]),int(k[1])),color=(255,255,33),thickness=5)
-        # Display the annotated frame
-        cv2.imshow("YOLO11 Tracking", frame)
-        # Break the loop if 'q' is pressed
-        
 
 
     def run(self,clas,label,show=False):
@@ -92,8 +75,9 @@ class DataCollector:
 
 
                 if show:
-                    self.show(frame,results)
-                    
+                    frame= results[0].plot()
+                    cv2.imshow("YOLO11 Tracking", frame)
+                      
                 if cv2.waitKey(1) & 0xFF == ord("q") and show:
                     break
 
@@ -102,9 +86,12 @@ class DataCollector:
                 break
         Dataset_tensor = torch.stack(Dataset)
         Yset=torch.tensor(Yset)
-        torch.save(Dataset_tensor, "Data/"+clas+'__x.pth')
-        torch.save(Yset,"Data/"+clas+"__y.pth")
-        print("SUCESS")
+        try:
+            torch.save(Dataset_tensor, "Data/"+clas+'__x.pth')
+            torch.save(Yset,"Data/"+clas+"__y.pth")
+            print("SUCESS")
+        except:
+            print("Failed TO save")
         self.cap.release()
         if show:
             cv2.destroyAllWindows()

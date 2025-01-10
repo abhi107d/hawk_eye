@@ -36,10 +36,13 @@ class Extractor:
 
 class Draw:
                            
-    def drawBox(self,frame,boxes,predclass):
+    def drawBox(self,frame,boxes,predclass,fps=None):
     #draw squares around tracks 
         xywhs=boxes.xywh
         ids=boxes.id.int()
+        if fps:
+            cv2.putText(frame, f"FPS: {int(fps)}", (10, 30),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
         for xywh,id in zip(xywhs,ids):
             # Draw bounding box and ID
             color=(0,255,0)
