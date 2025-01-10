@@ -1,6 +1,6 @@
 absl-py
-git+https://github.com/THU-MIG/yolov10.git
-deep-sort-realtime
-mediapipe
+ultralytics
 scikit-learn
+lap
 huggingface_hub
+opencv-python

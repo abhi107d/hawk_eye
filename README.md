@@ -17,7 +17,6 @@ This project aims to develop a system for exam hall cheating detection It utiliz
 - CUDA Toolkit (11.8)
 - cuDNN (8.9.7)
 - ultralytics
-- MediaPipe
 - OpenCV
 - Additional Python Libraries (scikit-learn, huggingface_hub, etc.)
 
@@ -62,20 +61,6 @@ Install the remaining dependencies required for the project:
 pip -r requirements.txt
 ```
 
-### Step 7: Download Yolov10 weights
-```bash
- mkdir weights
- mkdir -p weights
- wget -P weights -q https://github.com/jameslahm/yolov10/releases/download/v1.0/yolov10n.pt
- wget -P weights -q https://github.com/jameslahm/yolov10/releases/download/v1.0/yolov10s.pt
- wget -P weights -q https://github.com/jameslahm/yolov10/releases/download/v1.0/yolov10m.pt
- wget -P weights -q https://github.com/jameslahm/yolov10/releases/download/v1.0/yolov10b.pt
- wget -P weights -q https://github.com/jameslahm/yolov10/releases/download/v1.0/yolov10x.pt
- wget -P weights -q https://github.com/jameslahm/yolov10/releases/download/v1.0/yolov10l.pt
- ls -lh weights
- ```
-
-
 ## Usage
 After completing the installation, navigate to the project directory and activate the Conda environment to begin using the tool.
 
@@ -89,7 +74,7 @@ python app.py
 
 ### Step 1:
 ```bash
-python Preprocessor/data_processor.py
+python Preprocessor/dataset_builder.py
 ```
 Enter the path or your source vido
 
@@ -101,13 +86,12 @@ Run Trainer/Trainer.ipynb
 - model is not accurate we need to collect more data
 
 ## :TODO
-- Train a torch lstm model on cctv data
 - Develop UI
 - Aleart system 
 
 ## Acknowledgments
 - PyTorch: [https://pytorch.org/](https://pytorch.org/)
-- YOLOv10: [https://github.com/THU-MIG/yolov10](https://github.com/THU-MIG/yolov10)
-- Deep SORT: [https://github.com/ZYKXYZ/DeepSORT](https://github.com/ZYKXYZ/DeepSORT)
-- MediaPipe: [https://mediapipe.dev/](https://mediapipe.dev/)
+- YOLO
+
+
 

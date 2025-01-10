@@ -1,42 +1,23 @@
 import cv2 
-import mediapipe as mp
-from image_processor import ImageProcessor
+
 
 
 class Draw:
-        
-    def __init__(self):          
-        self.mp_draw=mp.solutions.drawing_utils
-        self.mp_hol=mp.solutions.pose
-        self.ip=ImageProcessor()
-           
-        
-
-    def drawLandmarks(self,frame,landmarks):
-        if not landmarks:
-            return    
-        self.mp_draw.draw_landmarks(frame,landmarks.pose_landmarks,self.mp_hol.POSE_CONNECTIONS,
-                            self.mp_draw.DrawingSpec(color=(245,117,66), thickness=2, circle_radius=1),
-                            self.mp_draw.DrawingSpec(color=(245,117,66), thickness=2, circle_radius=1))
-                                
-   
-                            
+                           
     
-    def drawTrack(self,trackObjects,frame,drawLandmarks=False):
+    def drawBox(self,frame,boxes,predclass):
     #draw squares around tracks 
-    
-        for tob in trackObjects:
+        xywhs=boxes.xywh
+        ids=boxes.id.int()
+        for xywh,id in zip(xywhs,ids):
             # Draw bounding box and ID
             color=(0,255,0)
-            if tob.predClass:
+            x,y,w,h=xywh
+            w,h=w/2,h/2
+            if id.item() in predclass.keys() and predclass[id.item()]:
                 color=(0,0,255)
-            if drawLandmarks:
-                image=self.ip.crop(frame,tob)
-                if image is not None:
-                    self.drawLandmarks(image,tob.poseLandmarks)
-            
-            cv2.rectangle(frame, (int(tob.x), int(tob.y)), (int(tob.x + tob.w), int(tob.y + tob.h)), color, 2)
-            cv2.putText(frame, f"ID: {tob.id} | {tob.objClass}", (int(tob.x), int(tob.y) - 10),
+            cv2.rectangle(frame, (int(x-w), int(y-h)), (int(x + w), int(y + h)), color, 2)
+            cv2.putText(frame, f"ID: {id}", (int(x-w), int(y-h) - 10),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
             
         return frame
