@@ -22,6 +22,7 @@ def main():
     parser.add_argument("--show",type=bool,required=False,default=20,help="show detection")
     parser.add_argument("--posepath",type=str,required=False,default="weights/yolo11x-pose.pt",help="path to pose model")
     parser.add_argument("--database",type=str,required=False,default="Data/hawkeye.db",help="path to database")
+    parser.add_argument("--buffersize",type=int,required=False,default=100,help="size of buffer to write")
     # Parse the arguments
     args = parser.parse_args()
     
@@ -49,15 +50,18 @@ class DataCollector:
         #database
         self.connection=sqlite3.connect(database)
         self.cursor=self.connection.cursor()
-        self.cursor.execute("CREATE TABLE IF NOT EXISTS data (id INTEGER PRIMARY KEY, x BLOB, y INTEGER)")
+        self.cursor.execute("CREATE TABLE IF NOT EXISTS data (id STRING PRIMARY KEY,pid INTEGER ,x BLOB, y INTEGER)")
         self.connection.commit()
 
         self.buffersize=100
+        self.vidname=sorce.split('/')[-1].split(".")[0]
+
 
     def insert(self,dataset):
         try:
-            self.cursor.executemany("INSERT INTO data (x,y) VALUES (?,?)",dataset)
+            self.cursor.executemany("INSERT OR IGNORE INTO data (id,pid,x,y) VALUES (?,?,?,?)",dataset)
             self.connection.commit()
+            print("----{} OF Data saved----".format(self.buffersize))
         except:
             print("Failed to save")
 
@@ -65,28 +69,29 @@ class DataCollector:
 
     def run(self,label,show=False):
         # Loop through the video frames
-        
+        frameno=0
         Dataset=[]
         while self.cap.isOpened():
             # Read a frame from the video
             success, frame = self.cap.read()
             if success:                
+                frameno+=1
                 results = self.model.track(frame, persist=True,tracker='bytetrack.yaml',verbose=False,device='cuda',conf=0.75)
                 ids=results[0].boxes.id
                 if ids is None:
                     continue
                 ids=ids.int()
                 rslt=self.extractor.tensor(results)
-                for i in range(rslt.shape[0]):  
-                    self.dict[ids[i].item()].append(rslt[i])
-                    if len(self.dict[ids[i].item()])==self.seqlen:          
-                        Dataset.append((pickle.dumps(torch.stack(self.dict[ids[i].item()])),label))
+                for i in range(rslt.shape[0]): 
+                    id=ids[i].item() 
+                    self.dict[id].append(rslt[i])
+                    if len(self.dict[id])==self.seqlen:          
+                        Dataset.append((self.vidname+str(frameno)+"_"+str(id),id,pickle.dumps(torch.stack(self.dict[id])),label))
                         self.dict[ids[i].item()]=[]
-
 
                 if show:
                     frame= results[0].plot()
-                    cv2.imshow("YOLO11 Tracking", frame)
+                    cv2.imshow("Hawk Eye", frame)
                       
                 if cv2.waitKey(1) & 0xFF == ord("q") and show:
                     break
@@ -98,8 +103,8 @@ class DataCollector:
 
         if len(Dataset)>0:
             self.insert(Dataset)
-            self.connection.close()
-            print("Data saved")
+
+        self.connection.close()
         self.cap.release()
         if show:
             cv2.destroyAllWindows()

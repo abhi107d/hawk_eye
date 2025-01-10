@@ -6,7 +6,7 @@ import argparse
 from collections import defaultdict,deque
 from src.utils import Extractor
 from src.utils import Draw
-import time
+
 
 def main():
     # Create the argument parser
@@ -69,14 +69,19 @@ class Run():
 
 
     def run(self):
+  
         while self.cam.isOpened():
-            
+         
             ret, frame = self.cam.read()
             if not ret:
                 break
             input,ididx,idclass=[],{},{}
-            
-            results=self.objmodel.track(frame, persist=True,tracker='bytetrack.yaml',verbose=False,device='cuda',conf=0.75)
+            with torch.no_grad():
+                results=self.objmodel.track(frame, persist=True,
+                                            tracker='bytetrack.yaml'
+                                            ,verbose=False,
+                                            device='cuda',
+                                            conf=0.75)
             rslt=self.extractor.tensor(results)
             idx=results[0].boxes.id
             if idx is None or rslt is  None:
@@ -92,13 +97,14 @@ class Run():
                     ididx[idx[i].item()]=len(input)-1
                 
             if input:
-                input=torch.stack(input).to(self.device)
-                input=input.reshape(input.shape[0],input.shape[1],-1)      
-                output = self.model(input) # Output shape: (N, num_classes)     
-                prediction = torch.argmax(output, dim=-1)#(N)
+                with torch.no_grad():
+                    input=torch.stack(input).to(self.device)
+                    input=input.reshape(input.shape[0],input.shape[1],-1)      
+                    output = self.model(input) # Output shape: (N, num_classes)     
+                    prediction = torch.argmax(output, dim=-1)#(N)
                 for k in ididx.keys():
                     idclass[k]=self.label_map[prediction[ididx[k]].item()]
-                        
+             
             self.draw.drawBox(frame,results[0].boxes,idclass)
             #frame=results[0].plot()
             
