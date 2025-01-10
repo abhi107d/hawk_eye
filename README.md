@@ -5,10 +5,10 @@ This project aims to develop a system for exam hall cheating detection It utiliz
 
 ## Algorithm
  - First we track persons using deepsort and yolo
- - crop each detections and pass it through pose detection model (Mediapipe)
+ - pass each detections through pose detection model 
  - Extract pose landmarks
  - collect landmarks for n number of frames for each persons 
- - pass landmark array to classfier model to get peredection (cheatin/non cheating)
+ - pass landmark sequence to classfier model to get peredection (cheatin/non cheating)
  - show aleart (red box)
 
 ## Requirements
