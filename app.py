@@ -2,13 +2,11 @@ import cv2
 import torch
 import torch.nn as nn
 from ultralytics import YOLO
-import sys
 import argparse
 from collections import defaultdict,deque
 
-sys.path.insert(1, './utils/')
-from extract import Extractor
-from draw import Draw
+from utils.extract import Extractor
+from utils.draw import Draw
 
 def main():
     # Create the argument parser
