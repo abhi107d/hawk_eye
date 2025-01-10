@@ -74,7 +74,7 @@ python app.py
 
 ### Step 1:
 ```bash
-python python dataset_builder.py --videosrc "../videos_test/cheating.mp4"  --label 1 --show True #example usage
+python -m src.components.dataset_builder --videosrc "videos_test/cheating.mp4" --label 1 --show True #example usage
 ```
 -- videosrc = sorce video
 -- label = 1 for cheating class and 2 for non cheating class

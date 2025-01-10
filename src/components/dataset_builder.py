@@ -3,10 +3,12 @@ import numpy as np
 import torch
 from ultralytics import YOLO
 from collections import defaultdict
-import sys
+
 import argparse
-sys.path.insert(1, '../utils/')
-from extract import Extractor
+
+
+from src.utils import Extractor
+
 
 def main():
     # Create the argument parser
@@ -17,7 +19,7 @@ def main():
     parser.add_argument("--label",type=int,required=True,help="1 for cheating 2 for not cheating")
     parser.add_argument("--seqlen",type=int,required=False,default=20,help="seqlen of one datapoint in dataset")
     parser.add_argument("--show",type=bool,required=False,default=20,help="show detection")
-    parser.add_argument("--posepath",type=str,required=False,default="../weights/yolo11x-pose.pt",help="path to pose model")
+    parser.add_argument("--posepath",type=str,required=False,default="weights/yolo11x-pose.pt",help="path to pose model")
     # Parse the arguments
     args = parser.parse_args()
     
@@ -100,8 +102,8 @@ class DataCollector:
                 break
         Dataset_tensor = torch.stack(Dataset)
         Yset=torch.tensor(Yset)
-        torch.save(Dataset_tensor, "../Data/"+clas+'__x.pth')
-        torch.save(Yset,"../Data/"+clas+"__y.pth")
+        torch.save(Dataset_tensor, "Data/"+clas+'__x.pth')
+        torch.save(Yset,"Data/"+clas+"__y.pth")
         print("SUCESS")
         self.cap.release()
         if show:

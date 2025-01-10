@@ -5,8 +5,8 @@ from ultralytics import YOLO
 import argparse
 from collections import defaultdict,deque
 
-from utils.extract import Extractor
-from utils.draw import Draw
+from src.utils import Extractor
+from src.utils import Draw
 
 def main():
     # Create the argument parser
