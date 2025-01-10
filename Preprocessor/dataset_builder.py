@@ -4,9 +4,30 @@ import torch
 from ultralytics import YOLO
 from collections import defaultdict
 import sys
+import argparse
 sys.path.insert(1, '../utils/')
 from extract import Extractor
 
+def main():
+    # Create the argument parser
+    parser = argparse.ArgumentParser(description="Program To Convert video into dataset")
+    
+    # Add required arguments
+    parser.add_argument("--videosrc",type=str, required=True, help="Path to the input video")
+    parser.add_argument("--label",type=int,required=True,help="1 for cheating 2 for not cheating")
+    parser.add_argument("--seqlen",type=int,required=False,default=20,help="seqlen of one datapoint in dataset")
+    parser.add_argument("--show",type=bool,required=False,default=20,help="show detection")
+    
+    # Parse the arguments
+    args = parser.parse_args()
+    
+                                
+    #adjust values here
+    labels=["cheating","non_cheating"]
+    clas=labels[args.label-1]
+
+    dc=DataCollector(args.videosrc,args.seqlen)
+    dc.run(clas=clas,label=args.label,show=args.show)
 
 
 class DataCollector:
@@ -79,34 +100,14 @@ class DataCollector:
                 break
         Dataset_tensor = torch.stack(Dataset)
         Yset=torch.tensor(Yset)
-        torch.save(Dataset_tensor, "../Data/"+clas+'_Dataset.pth')
-        torch.save(Yset,"../Data/"+clas+"_ylabel.pth")
+        torch.save(Dataset_tensor, "../Data/"+clas+'__x.pth')
+        torch.save(Yset,"../Data/"+clas+"__y.pth")
         print("SUCESS")
         self.cap.release()
         if show:
             cv2.destroyAllWindows()
-
-
+  
      
-     
-                                
 
-
-
-
-
-                                
-#adjust values here
-labels=["cheating","non_cheating"]
-no_frames=20
-action=int(input("cheating=1 or non_cheating=2 : "))
-clas=labels[action-1]
-
-sorce="../videos_test/cheating.mp4"
-
-
-dc=DataCollector(sorce,no_frames)
-dc.run(clas=clas,label=action,show=False)
-
-
-
+if __name__ == "__main__":
+    main()

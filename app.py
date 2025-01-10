@@ -1,14 +1,30 @@
 import cv2
-import numpy as np
 import torch
 import torch.nn as nn
 from ultralytics import YOLO
 import sys
+import argparse
 from collections import defaultdict,deque
 
 sys.path.insert(1, './utils/')
 from extract import Extractor
 from draw import Draw
+
+def main():
+    # Create the argument parser
+    parser = argparse.ArgumentParser(description="Program To Convert video into dataset")
+    
+    # Add required arguments
+    parser.add_argument("--src",type=str,default=0, required=False, help="path")
+    parser.add_argument("--modelpath",default="models/model.pth",type=str,required=False,help="model path")
+    parser.add_argument("--posepath",default="./weights/yolo11x-pose.pt",type=str,required=False,help="pose model path")
+    
+    # Parse the arguments
+    args = parser.parse_args()
+
+    run=Run(args.src,args.modelpath,args.posepath)
+    run.run()
+
 
 class LSTMModel(nn.Module):
     def __init__(self, input_size, num_classes):
@@ -32,64 +48,66 @@ class LSTMModel(nn.Module):
         x = self.fc3(x)
         return x
     
+class Run():
+    def __init__(self,src,modelpath,weightpath):
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.label_map = [True, False]
+
+        self.model = torch.load(modelpath)
+        self.model.to(self.device) 
+        self.model.eval()  
+
+        self.objmodel = YOLO(weightpath).to(self.device)
+        self.objmodel.eval()
+
+        self.extractor=Extractor()
+        self.draw=Draw()
+
+        self.Mdict=defaultdict(lambda: deque(maxlen=self.seqlen))
+        self.cam = cv2.VideoCapture(src)
+        self.seqlen=20
 
 
-def run():
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    label_map = [True, False]
 
-    model = torch.load("models/model.pth")
-    model.to(device) 
-    model.eval()  
 
-    objmodel = YOLO("./weights/yolo11x-pose.pt").to(device)
-    objmodel.eval()
+    def run(self):
 
-    extractor=Extractor()
-    draw=Draw()
-
-    Mdict=defaultdict(lambda: deque(maxlen=seqlen))
-    cam = cv2.VideoCapture("./videos_test/not_cheating.mp4")
-    trsh = 0.6
-    res = np.array([0, 0])
-    seqlen=20
-
-    while cam.isOpened():
-            ret, frame = cam.read()
-            if not ret:
-                break
-            input,ididx,idclass=[],{},{}
-            
-            results=objmodel.track(frame, persist=True,tracker='bytetrack.yaml',verbose=False,device='cuda',conf=0.75)
-            rslt=extractor.tensor(results)
-            idx=results[0].boxes.id
-            if idx is None or rslt is  None:
-                continue
-            idx=idx.int()
-            for i in range(rslt.shape[0]):
-                Mdict[idx[i].item()].append(rslt[i])
-                if len(Mdict[idx[i].item()])>=seqlen:
-                    input.append(torch.stack(list(Mdict[idx[i].item()])))
-                    ididx[idx[i].item()]=len(input)-1
+        while self.cam.isOpened():
+                ret, frame = self.cam.read()
+                if not ret:
+                    break
+                input,ididx,idclass=[],{},{}
                 
-            if input:
-                input=torch.stack(input).to(device)
-                input=input.reshape(input.shape[0],input.shape[1],-1)      
-                output = model(input) # Output shape: (N, num_classes)     
-                prediction = torch.argmax(output, dim=-1)#(N)
-                for k in ididx.keys():
-                    idclass[k]=label_map[prediction[ididx[k]].item()]
-            
-            draw.drawBox(frame,results[0].boxes,idclass)
-            #frame=results[0].plot()
-            
-            cv2.imshow("Hawk eye", frame)
-            if cv2.waitKey(10) & 0xFF == ord('q'):
-                break
+                results=self.objmodel.track(frame, persist=True,tracker='bytetrack.yaml',verbose=False,device='cuda',conf=0.75)
+                rslt=self.extractor.tensor(results)
+                idx=results[0].boxes.id
+                if idx is None or rslt is  None:
+                    continue
+                idx=idx.int()
+                for i in range(rslt.shape[0]):
+                    self.Mdict[idx[i].item()].append(rslt[i])
+                    if len(self.Mdict[idx[i].item()])>=self.seqlen:
+                        input.append(torch.stack(list(self.Mdict[idx[i].item()])))
+                        ididx[idx[i].item()]=len(input)-1
+                    
+                if input:
+                    input=torch.stack(input).to(self.device)
+                    input=input.reshape(input.shape[0],input.shape[1],-1)      
+                    output = self.model(input) # Output shape: (N, num_classes)     
+                    prediction = torch.argmax(output, dim=-1)#(N)
+                    for k in ididx.keys():
+                        idclass[k]=self.label_map[prediction[ididx[k]].item()]
+                
+                self.draw.drawBox(frame,results[0].boxes,idclass)
+                #frame=results[0].plot()
+                
+                cv2.imshow("Hawk eye", frame)
+                if cv2.waitKey(10) & 0xFF == ord('q'):
+                    break
 
-    cam.release()
-    cv2.destroyAllWindows()
+        self.cam.release()
+        cv2.destroyAllWindows()
 
 
 if __name__=='__main__':
-    run()
+    main()

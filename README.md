@@ -74,9 +74,12 @@ python app.py
 
 ### Step 1:
 ```bash
-python Preprocessor/dataset_builder.py
+python python dataset_builder.py --videosrc "../videos_test/cheating.mp4"  --label 1 --show True #example usage
 ```
-Enter the path or your source vido
+-- videosrc = sorce video
+-- label = 1 for cheating class and 2 for non cheating class
+-- show = if True shows video and detections 
+-- seqlen = sequence length of video default 20
 
 ### Step 2:
 Run Trainer/Trainer.ipynb
