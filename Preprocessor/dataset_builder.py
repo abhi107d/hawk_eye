@@ -17,7 +17,7 @@ def main():
     parser.add_argument("--label",type=int,required=True,help="1 for cheating 2 for not cheating")
     parser.add_argument("--seqlen",type=int,required=False,default=20,help="seqlen of one datapoint in dataset")
     parser.add_argument("--show",type=bool,required=False,default=20,help="show detection")
-    
+    parser.add_argument("--posepath",type=str,required=False,default="../weights/yolo11x-pose.pt",help="path to pose model")
     # Parse the arguments
     args = parser.parse_args()
     
@@ -26,15 +26,15 @@ def main():
     labels=["cheating","non_cheating"]
     clas=labels[args.label-1]
 
-    dc=DataCollector(args.videosrc,args.seqlen)
+    dc=DataCollector(args.videosrc,args.seqlen,args.posepath)
     dc.run(clas=clas,label=args.label,show=args.show)
 
 
 class DataCollector:
 
-    def __init__(self,sorce,seqlen):
+    def __init__(self,sorce,seqlen,modelpath):
         with torch.no_grad():
-            self.model = YOLO("../weights/yolo11x-pose.pt").to('cuda')
+            self.model = YOLO(modelpath).to('cuda')
             self.model.eval()
 
         # Open the video file
