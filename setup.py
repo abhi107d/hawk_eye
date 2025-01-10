@@ -9,15 +9,6 @@ def run_command(command):
         exit(1)
 
 
-def create_conda_environment():
-    """Create a Conda environment."""
-    print("Creating a Conda environment...")
-    run_command("conda create -p env python=3.11 -y")
-
-def activate_conda_environment():
-    """Activate the Conda environment."""
-    print("Activating the Conda environment...")
-    run_command("conda activate /env")
 
 def install_cuda_toolkit():
     """Install CUDA Toolkit and cuDNN."""
@@ -36,8 +27,6 @@ def install_additional_dependencies():
 
 def main():
     """Main setup process."""
-    create_conda_environment()
-    activate_conda_environment()
     install_cuda_toolkit()
     install_pytorch()
     install_additional_dependencies()

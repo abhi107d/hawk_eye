@@ -42,14 +42,14 @@ def run():
     model.to(device) 
     model.eval()  
 
-    objmodel = YOLO("../weights/yolo11x-pose.pt").to(device)
+    objmodel = YOLO("./weights/yolo11x-pose.pt").to(device)
     objmodel.eval()
 
     extractor=Extractor()
     draw=Draw()
 
     Mdict=defaultdict(lambda: deque(maxlen=seqlen))
-    cam = cv2.VideoCapture(0)#"./videos_test/cheating.mp4")
+    cam = cv2.VideoCapture("./videos_test/not_cheating.mp4")
     trsh = 0.6
     res = np.array([0, 0])
     seqlen=20

@@ -32,13 +32,13 @@ cd hawk_eye
 ### Step 2: Create a Conda Environment 
 Use the following command to create a Conda environment in a specified directory:
 ```bash
-conda create -p ./torch python=3.11
+conda create -p env python=3.11
 ```
 
 ### Step 3: Activate the Environment
 Activate the newly created Conda environment:
 ```bash
-conda activate ./torch
+conda activate ./env
 ```
 
 ### Step 4: Install CUDA Toolkit and cuDNN
@@ -66,7 +66,7 @@ After completing the installation, navigate to the project directory and activat
 
 ```bash
 cd hawk_eye
-conda activate ./torch
+conda activate ./env
 python app.py
 ```
 

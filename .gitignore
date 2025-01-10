@@ -12,7 +12,7 @@ test.ipynb
 **/githubs/
 **/skeleton_data/
 **/test_*
-
+env
 # VSCode settings
 .vscode/
 
