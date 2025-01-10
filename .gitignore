@@ -26,6 +26,7 @@ tmp*
 Data/cheating/*
 Data/non_cheating/*
 Data/data.*
+Data/*db
 
 # Miscellaneous
 **/core
