@@ -1,56 +1,119 @@
-import torch
-import os
-import torch.nn.functional as F
-from torch.utils.data import TensorDataset
+from torch.utils.data import TensorDataset,DataLoader
 import argparse
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from src.components.model import LSTMModel
+import sqlite3
+import pickle
+
 
 def main():
     parser = argparse.ArgumentParser(description="Program To Convert video into dataset")
     
     # Add required arguments
-    parser.add_argument("--x",type=str, required=True, help="input data")
-    parser.add_argument("--y",type=int,required=True,help="output data")
+    parser.add_argument("--db",type=str,required=False,default='Data/hawkeye.db',help="database path")
+    parser.add_argument("--table",type=str,required=False,default='data',help="table name")
+    parser.add_argument("--num_epochs",type=int,required=False,default=50,help="number of epochs")
     parser.add_argument("--lr",type=float,required=False,default=0.001,help="learning rate")
+    parser.add_argument("--limit",type=int,required=False,default=1000,help="limit of data to load")
+    parser.add_argument("--batch_size",type=int,required=False,default=100,help="batch size")
+    parser.add_argument("--save",type=str,required=False,default='models/model2.pth',help="model save path")
+    parser.add_argument("--num_classes",type=int,required=False,default=2,help="number of classes")
+    parser.add_argument("--input_size",type=int,required=False,default=51,help="input size")
+    parser.add_argument("--offset",type=int,required=False,default=0,help="offset")
+    parser.add_argument("--modelpath",type=str,required=False,default=None,help="model path")
     # Parse the arguments
     args = parser.parse_args()
 
+    #connecting to Database
+    try:
+        connection=sqlite3.connect(args.db)
+        cursor=connection.cursor()
+    except:
+        print("Database not found")
+        exit(0)
+
+    limit=args.limit
+    offset=args.offset
+    currlen=limit
+
+    #check if table exists
+    try:
+        cursor.execute("SELECT COUNT(*) FROM {}".format(args.table))
+        row_count = cursor.fetchone()[0]
+    except:
+        print("Table not found")
+        exit(0)
+
+
+    #define model
+    trainer=Trainer(args.modelpath,args.input_size,args.num_classes,args.lr,args.num_epochs)
+
+    while currlen == limit:
+        #loading data
+        query = "SELECT x,y FROM {} ORDER BY id ASC LIMIT ? OFFSET ?".format(args.table)
+        cursor.execute(query, (limit,offset))
+        xy = cursor.fetchall()
+        currlen=len(xy)
+        offset+=limit
+
+        #process Data
+        x= torch.stack([pickle.loads(item[0]) for item in xy])
+        x= x.reshape(x.shape[0],20,-1)
+        y= torch.tensor([item[1] for item in xy])
+
+        #batching data        
+        dataset = TensorDataset(x, y)
+        dataloader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True)
+
+        #model Traning
+        trainer.train(dataloader,offset,row_count)
 
 
 
+        #saving model
+        print("--------{} COMPLETED----------".format(offset))
+        print("--------SAVING MODEL------------")
+        try:
+            torch.save(trainer.model,args.save)
+            print("--------MODEL SAVED-------------")
+        except:
+            print("-----FAILED TO SAVE MODEL-----")
 
-
-
-# Define the model architecture
-class LSTMModel(nn.Module):
-    def __init__(self, input_size, num_classes):
-        super(LSTMModel, self).__init__()
-        self.lstm1 = nn.LSTM(input_size, 64, batch_first=True)
-        self.lstm2 = nn.LSTM(64, 128, batch_first=True)
-        self.lstm3 = nn.LSTM(128, 64, batch_first=True)
-        self.fc1 = nn.Linear(64, 64)
-        self.fc2 = nn.Linear(64, 32)
-        self.fc3 = nn.Linear(32, num_classes)
-        self.relu = nn.ReLU()
-        self.softmax = nn.Softmax(dim=1)
-
-    def forward(self, x):
-        x, _ = self.lstm1(x)
-        x, _ = self.lstm2(x)
-        x, _ = self.lstm3(x)
-        x = self.relu(self.fc1(x[:, -1, :]))  # Use the last time step's output
-        x = self.relu(self.fc2(x))
-        x = self.fc3(x)
-        return x
+    connection.close()
     
 
 class Trainer():
-    def __init__(self,input_size,num_classes,lr):
+    def __init__(self,modelpath,input_size,num_classes,lr,num_epochs):
 
-        
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.model = LSTMModel(input_size, num_classes).to(self.device)
+        if modelpath is not None:
+            self.model = torch.load(modelpath).to(self.device)
+        else:
+            self.model = LSTMModel(input_size, num_classes).to(self.device)
         self.criterion = nn.CrossEntropyLoss()
         self.optimizer = optim.Adam(self.model.parameters(), lr=lr)
+        self.num_epochs = num_epochs
+
+
+    def train(self,dataloader,offset,row_count):
+        for epoch in range(self.num_epochs):
+            self.model.train()  
+            epoch_loss = 0.0
+
+            for batch_x, batch_y in dataloader:
+                batch_x, batch_y = batch_x.to(self.device), batch_y.to(self.device)    
+                outputs = self.model(batch_x)
+                loss = self.criterion(outputs, batch_y)               
+                self.optimizer.zero_grad()
+                loss.backward()
+                self.optimizer.step()
+
+                epoch_loss += loss.item()
+
+            print(f"Epoch {epoch+1}/{self.num_epochs}, Loss: {epoch_loss/len(dataloader):.4f}, Offset: {offset}/{row_count}")
+            
+
+if __name__ == "__main__":
+    main()

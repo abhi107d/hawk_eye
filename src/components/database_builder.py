@@ -61,9 +61,10 @@ class DataCollector:
         try:
             self.cursor.executemany("INSERT OR IGNORE INTO data (id,pid,x,y) VALUES (?,?,?,?)",dataset)
             self.connection.commit()
-            print("----{} OF Data saved----".format(self.buffersize))
+            print("---------SAVED---------")
+            
         except:
-            print("Failed to save")
+            print("---------SAVE FAILED---------")
 
 
 
@@ -86,7 +87,7 @@ class DataCollector:
                     id=ids[i].item() 
                     self.dict[id].append(rslt[i])
                     if len(self.dict[id])==self.seqlen:          
-                        Dataset.append((self.vidname+str(frameno)+"_"+str(id),id,pickle.dumps(torch.stack(self.dict[id])),label))
+                        Dataset.append((str(frameno)+self.vidname+"_"+str(id),id,pickle.dumps(torch.stack(self.dict[id])),label))
                         self.dict[ids[i].item()]=[]
 
                 if show:
@@ -98,6 +99,7 @@ class DataCollector:
             else:
                 break
             if len(Dataset)>self.buffersize:
+                print("----SAVING {} SEQUENCES.....----".format(self.buffersize))
                 self.insert(Dataset)
                 Dataset=[]
 
