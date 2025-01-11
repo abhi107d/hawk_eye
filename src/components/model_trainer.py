@@ -9,7 +9,7 @@ import pickle
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Program To Convert video into dataset")
+    parser = argparse.ArgumentParser(description="Program to train the model")
     
     # Add required arguments
     parser.add_argument("--db",type=str,required=False,default='Data/hawkeye.db',help="database path")
@@ -86,6 +86,8 @@ def main():
 
 class Trainer():
     def __init__(self,modelpath,input_size,num_classes,lr,num_epochs):
+        import warnings
+        warnings.filterwarnings("ignore", category=FutureWarning, message="You are using `torch.load` with `weights_only=False`")
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         if modelpath is not None:
