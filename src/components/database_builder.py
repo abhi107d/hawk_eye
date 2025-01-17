@@ -19,7 +19,7 @@ def main():
     parser.add_argument("--videosrc",type=str, required=True, help="Path to the input video")
     parser.add_argument("--label",type=int,required=True,help="1 for cheating 2 for not cheating")
     parser.add_argument("--seqlen",type=int,required=False,default=20,help="seqlen of one datapoint in dataset")
-    parser.add_argument("--show",type=bool,required=False,default=20,help="show detection")
+    parser.add_argument("--show",type=bool,required=False,default=False,help="show detection")
     parser.add_argument("--posepath",type=str,required=False,default="weights/yolo11x-pose.pt",help="path to pose model")
     parser.add_argument("--database",type=str,required=False,default="Data/hawkeye.db",help="path to database")
     parser.add_argument("--buffersize",type=int,required=False,default=100,help="size of buffer to write")
