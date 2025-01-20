@@ -57,7 +57,7 @@ def start_app():
     sys.argv.pop(0)
     args = ' '.join(sys.argv)
     print("Launching App")
-    run_cmd(f'python run.py {args}')
+    run_cmd(f'python app.py {args}')
 
 
 if __name__ == "__main__":
