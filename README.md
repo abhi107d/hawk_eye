@@ -11,78 +11,66 @@ This project aims to develop a system for exam hall cheating detection It utiliz
  - pass landmark sequence to classfier model to get peredection (cheatin/non cheating)
  - show aleart (red box)
 
+## Results
+<p float="left">
+  <img src="results/image1.png" width="500" />
+  <img src="results/image2.png" width="500" />
+</p>
+
+
 ## Requirements
 - Python 3.11
 - PyTorch
-- CUDA Toolkit (11.8)
-- cuDNN (8.9.7)
 - ultralytics
 - OpenCV
 - Additional Python Libraries (scikit-learn, huggingface_hub, etc.)
 
-## Instalation
+## Installation
 
-### Step 1: Clone the Repository
+### Clone the Repository
 Clone the project repository to your local machine:
 ```bash
 git clone https://github.com/abhi107d/hawk_eye.git
 cd hawk_eye
 ```
-
-### Step 2: Create a Conda Environment 
-Use the following command to create a Conda environment in a specified directory:
+### If no nvidia gpu
 ```bash
-conda create -p env python=3.11
+conda create -p ./installer_files/env python=3.11
+conda activate ./installer_files/env
+pip install -r requirements-cpu.txt
+
 ```
 
-### Step 3: Activate the Environment
-Activate the newly created Conda environment:
-```bash
-conda activate ./env
-```
-
-### Step 4: Install CUDA Toolkit and cuDNN
-Install the CUDA Toolkit and cuDNN required for GPU acceleration
-refer: https://developer.nvidia.com/rdp/cudnn-archive for version compatblity of cudnn:
-```bash
-conda install -c conda-forge cudatoolkit=11.8 cudnn=8.9.7
-```
-
-### Step 5: Install PyTorch with GPU Support
-Install PyTorch, torchvision, and torchaudio along with GPU support
-refer: https://pytorch.org/get-started/locally/ 
-```bash
-conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
-```
-
-### Step 6: Install Additional Dependencies
-Install the remaining dependencies required for the project:
-```bash
-pip -r requirements.txt
-```
+### If nvidia gpu is available
+Run installer/windows_run.bat
 
 ## Usage
-After completing the installation, navigate to the project directory and activate the Conda environment to begin using the tool.
+Run installer/windows_run.bat
 
-```bash
-cd hawk_eye
-conda activate ./env
-python app.py
-```
 
 ## Training
 
 ### Step 1:
+Preprocessing
 ```bash
-python -m src.components.dataset_builder --videosrc "videos_test/cheating.mp4" --label 1 --show True #example usage
+python -m src.components.database_builder --videosrc "videos_test/cheating.mp4" --label 1 --show True #example usage
 ```
--- videosrc = sorce video
--- label = 1 for cheating class and 2 for non cheating class
--- show = if True shows video and detections 
--- seqlen = sequence length of video default 20
+- videosrc = Sorce video
+- label = 1 for cheating class and 2 for non cheating class
+- show = If True shows video and detections 
+- seqlen = Sequence length of video default 20
+- database =  Path to database location
 
 ### Step 2:
-Run Trainer/Trainer.ipynb
+Training
+```bash
+python -m src.components.model_trainer  #example usage
+```
+### Step 3:
+Testing
+```bash
+python -m src.components.model_trainer --modelpath models/model.pth  #example usage
+```
 
 ## Notes
 - Ensure that you have a compatible GPU and drivers installed for CUDA Toolkit and cuDNN.

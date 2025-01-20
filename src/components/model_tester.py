@@ -51,7 +51,7 @@ def main():
         cursor.execute(query, (limit,offset))
         xy = cursor.fetchall()
         currlen=len(xy)
-        offset+=limit
+        offset+=currlen
 
         #process Data
         x= torch.stack([pickle.loads(item[0]) for item in xy])
